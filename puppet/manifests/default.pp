@@ -1,6 +1,6 @@
 $ar_databases = ['activerecord_unittest', 'activerecord_unittest2']
 $as_vagrant   = 'sudo -u vagrant -H bash -l -c'
-$home         = '/home/vagrant'
+$home         = '/'
 
 Exec {
   path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
@@ -29,34 +29,34 @@ package { ['sqlite3', 'libsqlite3-dev']:
 
 # --- MySQL --------------------------------------------------------------------
 
-class install_mysql {
-  class { 'mysql': }
+# class install_mysql {
+#   class { 'mysql': }
 
-  class { 'mysql::server':
-    config_hash => { 'root_password' => '' }
-  }
+#   class { 'mysql::server':
+#     config_hash => { 'root_password' => '' }
+#   }
 
-  database { $ar_databases:
-    ensure  => present,
-    charset => 'utf8',
-    require => Class['mysql::server']
-  }
+#   database { $ar_databases:
+#     ensure  => present,
+#     charset => 'utf8',
+#     require => Class['mysql::server']
+#   }
 
-  database_user { 'rails@localhost':
-    ensure  => present,
-    require => Class['mysql::server']
-  }
+#   database_user { 'rails@localhost':
+#     ensure  => present,
+#     require => Class['mysql::server']
+#   }
 
-  database_grant { ['rails@localhost/activerecord_unittest', 'rails@localhost/activerecord_unittest2']:
-    privileges => ['all'],
-    require    => Database_user['rails@localhost']
-  }
+#   database_grant { ['rails@localhost/activerecord_unittest', 'rails@localhost/activerecord_unittest2']:
+#     privileges => ['all'],
+#     require    => Database_user['rails@localhost']
+#   }
 
-  package { 'libmysqlclient15-dev':
-    ensure => installed
-  }
-}
-class { 'install_mysql': }
+#   package { 'libmysqlclient15-dev':
+#     ensure => installed
+#   }
+# }
+# class { 'install_mysql': }
 
 # --- PostgreSQL ---------------------------------------------------------------
 
@@ -76,7 +76,7 @@ class install_postgres {
     require => Class['postgresql::server']
   }
 
-  pg_user { 'vagrant':
+  pg_user { 'ltt':
     ensure    => present,
     superuser => true,
     require   => Class['postgresql::server']
@@ -121,6 +121,16 @@ package { 'nodejs':
   ensure => installed
 }
 
+# For Capybara-webkit Rails gem
+package { ['libqt4-dev', 'libqtwebkit-dev']:
+  ensure => installed
+}
+
+# For Image Magik
+package { 'libmagickwand-dev':
+  ensure => installed
+}
+
 # --- Ruby ---------------------------------------------------------------------
 
 exec { 'install_rvm':
@@ -135,7 +145,7 @@ exec { 'install_ruby':
   # The rvm executable is more suitable for automated installs.
   #
   # Thanks to @mpapis for this tip.
-  command => "${as_vagrant} '${home}/.rvm/bin/rvm install 2.0.0 --latest-binary --autolibs=enabled && rvm --fuzzy alias create default 2.0.0'",
+  command => "${as_vagrant} '${home}/.rvm/bin/rvm install 1.9.3 --latest-binary --autolibs=enabled && rvm --fuzzy alias create default 1.9.3'",
   creates => "${home}/.rvm/bin/ruby",
   require => Exec['install_rvm']
 }
@@ -143,4 +153,21 @@ exec { 'install_ruby':
 exec { "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'":
   creates => "${home}/.rvm/bin/bundle",
   require => Exec['install_ruby']
+}
+
+# --- Rails --------------------------------------------------------------------
+
+exec { 'install_rails':
+  command => "${as_vagrant} 'gem install rails -v 3.2.11'",
+  require => Exec['install_ruby']
+}
+
+# --- Before bundles installed -------------------------------------------------
+
+# bundle update debugger
+
+# --- Redis --------------------------------------------------------------------
+
+exec { 'install_redis':
+  command => "'sudo apt-get install redis-server'"
 }
