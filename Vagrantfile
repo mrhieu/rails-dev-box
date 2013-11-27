@@ -9,4 +9,9 @@ Vagrant.configure('2') do |config|
     puppet.manifests_path = 'puppet/manifests'
     puppet.module_path    = 'puppet/modules'
   end
+
+  config.vm.provider "virtualbox" do |v|
+	  v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+	  v.customize ["modifyvm", :id, "--memory", "1500"]
+	end
 end

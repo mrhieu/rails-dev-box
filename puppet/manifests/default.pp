@@ -1,6 +1,6 @@
 $ar_databases = ['activerecord_unittest', 'activerecord_unittest2']
 $as_vagrant   = 'sudo -u vagrant -H bash -l -c'
-$home         = '/'
+$home         = '/home/vagrant'
 
 Exec {
   path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
@@ -131,6 +131,11 @@ package { 'libmagickwand-dev':
   ensure => installed
 }
 
+# For Redis server
+package { 'redis-server':
+  ensure => installed
+}
+
 # --- Ruby ---------------------------------------------------------------------
 
 exec { 'install_rvm':
@@ -157,17 +162,11 @@ exec { "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'":
 
 # --- Rails --------------------------------------------------------------------
 
-exec { 'install_rails':
-  command => "${as_vagrant} 'gem install rails -v 3.2.11'",
+exec { "${as_vagrant} 'gem install rails -v 3.2.11'":
+  creates => "${home}/.rvm/bin/bundle",
   require => Exec['install_ruby']
 }
 
 # --- Before bundles installed -------------------------------------------------
 
 # bundle update debugger
-
-# --- Redis --------------------------------------------------------------------
-
-exec { 'install_redis':
-  command => "'sudo apt-get install redis-server'"
-}
