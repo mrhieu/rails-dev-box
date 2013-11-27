@@ -160,8 +160,6 @@ exec { "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'":
   require => Exec['install_ruby']
 }
 
-# --- Rails --------------------------------------------------------------------
-
 exec { "${as_vagrant} 'gem install rails -v 3.2.11'":
   creates => "${home}/.rvm/bin/bundle",
   require => Exec['install_ruby']
