@@ -12,6 +12,10 @@ Vagrant.configure('2') do |config|
 
   config.vm.provider "virtualbox" do |v|
 	  v.customize ["modifyvm", :id, "--cpuexecutioncap", "80"]
-	  v.customize ["modifyvm", :id, "--memory", "4000"]
+	  v.customize ["modifyvm", :id, "--memory", "3000"]
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] #disable reverse DNS
 	end
+
+  # config.vm.synced_folder ".", "/vagrant", nfs: true #for *NIX only
+  # add gem "gem 'rails-dev-tweaks', '~> 0.6.1'" for best performance
 end
