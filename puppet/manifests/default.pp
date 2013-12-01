@@ -1,3 +1,4 @@
+# http://www.puppetcookbook.com/
 $ar_databases = ['activerecord_unittest', 'activerecord_unittest2']
 $as_vagrant   = 'sudo -u vagrant -H bash -l -c'
 $home         = '/home/vagrant'
@@ -59,6 +60,7 @@ package { ['sqlite3', 'libsqlite3-dev']:
 # class { 'install_mysql': }
 
 # --- PostgreSQL ---------------------------------------------------------------
+# Intruction https://github.com/mrhieu/puppet-postgresql
 
 class install_postgres {
   class { 'postgresql': }
@@ -71,13 +73,14 @@ class install_postgres {
     require  => Class['postgresql::server']
   }
 
-  pg_user { 'rails':
-    ensure  => present,
-    require => Class['postgresql::server']
-  }
+  # pg_user { 'rails':
+  #   ensure  => present,
+  #   require => Class['postgresql::server']
+  # }
 
   pg_user { 'ltt':
     ensure    => present,
+    password  => '123456',
     superuser => true,
     require   => Class['postgresql::server']
   }
@@ -136,6 +139,23 @@ package { 'redis-server':
   ensure => installed
 }
 
+# --- Elasticsearch ------------------------------------------------------------
+
+# # https://gist.github.com/wingdspur/2026107
+# package { 'openjdk-7-jre-headless':
+#   ensure => installed
+# }
+# exec { 'download_elasticsearch':
+#   command => "${as_vagrant} 'wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.deb'",
+#   creates => "${home}/elasticsearch-0.90.7.deb",# Only download if not exist
+#   require => Package['openjdk-7-jre-headless']
+# }
+# exec { 'install_elasticsearch':
+#   command => "sudo dpkg -i ${home}/elasticsearch-0.90.7.deb",
+#   require => Exec['download_elasticsearch']
+#   # onlyif => "test -d ${home}/elasticsearch-0.90.7.deb"
+# }
+
 # --- Ruby ---------------------------------------------------------------------
 
 exec { 'install_rvm':
@@ -155,13 +175,14 @@ exec { 'install_ruby':
   require => Exec['install_rvm']
 }
 
-exec { "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'":
-  creates => "${home}/.rvm/bin/bundle",
-  require => Exec['install_ruby']
-}
+# exec { 'install_bundler':
+#   command => "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'",
+#   # creates => "${home}/.rvm/bin/bundle",
+#   require => Exec['install_ruby']
+# }
 
-exec { "${as_vagrant} 'gem install rails -v 3.2.11'":
-  creates => "${home}/.rvm/bin/bundle",
+exec { 'install_rails':
+  command => "${as_vagrant} 'gem install rails -v 3.2.11'",
   require => Exec['install_ruby']
 }
 
