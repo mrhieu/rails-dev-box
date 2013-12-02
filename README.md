@@ -1,4 +1,5 @@
 # A Virtual Machine for Ruby on Rails Core Development
+LTT version
 
 ## Introduction
 
@@ -16,8 +17,9 @@ Please note this virtual machine is not designed to be used for Rails applicatio
 
 Building the virtual machine is this easy:
 
-    host $ git clone https://github.com/rails/rails-dev-box.git
+    host $ git clone https://github.com/mrhieu/rails-dev-box.git
     host $ cd rails-dev-box
+    host $ git checkout modified
     host $ vagrant up
 
 That's it.
@@ -37,11 +39,13 @@ Port 3000 in the host computer is forwarded to port 3000 in the virtual machine.
 
 * RVM
 
-* Ruby 2.0.0 (binary RVM install)
+* Ruby 1.9.3 (binary RVM install)
+
+* Rails 3.2.11
 
 * Bundler
 
-* SQLite3, MySQL, and Postgres
+* SQLite3 and Postgres
 
 * System dependencies for nokogiri, sqlite3, mysql, mysql2, and pg
 
@@ -50,6 +54,12 @@ Port 3000 in the host computer is forwarded to port 3000 in the virtual machine.
 * Node.js for the asset pipeline
 
 * Memcached
+
+* Redis
+ 
+* Imagemagik
+ 
+* (Elasticsearch - optional)
 
 ## Recommended Workflow
 
@@ -61,19 +71,18 @@ The recommended workflow is
 
 Just clone your Rails fork into the rails-dev-box directory on the host computer:
 
-    host $ ls
-    README.md   Vagrantfile puppet
-    host $ git clone git@github.com:<your username>/rails.git
-
+    host $ cd rails-dev-box/share
+    host $ git clone git@github.com:<your username>/rails-app.git
+    
 Vagrant mounts that directory as _/vagrant_ within the virtual machine:
 
-    vagrant@rails-dev-box:~$ ls /vagrant
-    puppet  rails  README.md  Vagrantfile
+    vagrant@rails-dev-box:~$ cd /vagrant/share/rails-app
 
 Install gem dependencies in there:
 
-    vagrant@rails-dev-box:~$ cd /vagrant/rails
-    vagrant@rails-dev-box:/vagrant/rails$ bundle
+    vagrant@rails-dev-box:/vagrant/share/rails-app$ bundle install
+    vagrant@rails-dev-box:/vagrant/share/rails-app$ rake i18n:js:export
+    vagrant@rails-dev-box:/vagrant/share/rails-app$ rails s
 
 We are ready to go to edit in the host, and test in the virtual machine.
 

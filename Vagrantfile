@@ -12,7 +12,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.provider "virtualbox" do |v|
 	v.customize ["modifyvm", :id, "--cpus", "2"]
-	  v.customize ["modifyvm", :id, "--cpuexecutioncap", "80"]
+	  v.customize ["modifyvm", :id, "--cpuexecutioncap", "100"]
 	  v.customize ["modifyvm", :id, "--memory", "1000"]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] #disable reverse DNS
 	end
