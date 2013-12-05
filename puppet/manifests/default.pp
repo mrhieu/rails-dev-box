@@ -130,7 +130,7 @@ package { ['libqt4-dev', 'libqtwebkit-dev']:
 }
 
 # For Image Magik
-package { 'libmagickwand-dev':
+package { ['imagemagick', 'libmagickcore-dev', 'libmagickwand-dev']:
   ensure => installed
 }
 
